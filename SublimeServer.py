@@ -440,7 +440,7 @@ class SublimeServerThread(threading.Thread):
 
 class SublimeserverStartCommand(sublime_plugin.ApplicationCommand):
     def run(self):
-        global settings, thread, dic, attempts
+        global loaded, settings, thread, dic, attempts
         settings = load_settings()
         if thread is not None and thread.is_alive():
             return sublime.message_dialog('SublimeServer Alread Started!')
@@ -448,6 +448,7 @@ class SublimeserverStartCommand(sublime_plugin.ApplicationCommand):
             dic = get_directories()
             thread = SublimeServerThread()
             thread.start()
+            loaded = True
             sublime.status_message('SublimeServer Started!')
             attempts = 0
         except socket.error as error:
@@ -544,7 +545,6 @@ class SublimeserverAutorun(sublime_plugin.EventListener):
         global loaded, settings
         if loaded:
             return
-        loaded = True
         # if autorun set to True
         if settings.get('autorun') and thread is None:
             sublime.run_command('sublimeserver_start')
